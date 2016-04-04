@@ -1,0 +1,34 @@
+﻿<Window x:Class="AsyncSocketServer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:view="clr-namespace:AsyncSocketServer.View"
+        Title="局域网远程控制系统" Width="800" Height="600">
+    <Grid Width="800" >
+
+        <TabControl >
+            <TabItem Header="文件管理">
+                <Grid>
+                    <view:FileSystemView Grid.Column="0" ></view:FileSystemView>
+                </Grid>
+            </TabItem>
+            <TabItem  Header="注册表管理">
+                <view:RegistryManagerView ></view:RegistryManagerView>
+            </TabItem>
+            <TabItem Header="进程管理">
+                <view:ProcessManagerView></view:ProcessManagerView>
+            </TabItem>
+            <TabItem Header="服务管理">
+                <view:ServerManagerView></view:ServerManagerView>
+            </TabItem>
+            <TabItem Header="开机启动项管理">
+                <view:StartUpItemManager></view:StartUpItemManager>
+            </TabItem>
+            <TabItem Header="远程桌面"  KeyDown="UIElement_OnKeyDown" KeyUp="UIElement_OnKeyUp" >
+                <view:RemoteDestopView></view:RemoteDestopView>
+            </TabItem>
+            <TabItem Header="其他" >
+                <view:Other></view:Other>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

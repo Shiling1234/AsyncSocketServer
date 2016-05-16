@@ -557,7 +557,7 @@ namespace Client
         {     
  
             byte[] s = fileProtocol.GenerateMsg(dir);
-            fileProtocol.SplitSendData(App.client, s, 200, 200);
+        
         }
     }
 }

@@ -11,18 +11,18 @@
         <RowDefinition ></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Grid.Row="0">
-            <TextBlock TextAlignment="Center" Width="160" Text="标题"></TextBlock>
-            <TextBlock TextAlignment="Center" Width="160" Text="命令"></TextBlock>
-            <TextBlock TextAlignment="Center" Width="160" Text="位置"></TextBlock>
+            <TextBlock TextAlignment="Center" Width="400" Text="标题"></TextBlock>
+            <TextBlock TextAlignment="Center" Width="400" Text="命令"></TextBlock>
+            <!--<TextBlock TextAlignment="Center" Width="266" Text="位置"></TextBlock>-->
         
         </StackPanel>
         <ListView Name="StartUpitemListView"  Grid.Row="1">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel  Orientation="Horizontal">
-                        <TextBlock TextAlignment="Center" Width="160" Text="{Binding Caption}"></TextBlock>
-                        <TextBlock TextAlignment="Center" Width="160" Text="{Binding Command}"></TextBlock>
-                        <TextBlock TextAlignment="Center" Width="160"   Text="{Binding Location}"></TextBlock>
+                    <StackPanel  Orientation="Horizontal" >
+                        <TextBlock HorizontalAlignment="Left" TextAlignment="Center" Width="400" Text="{Binding Caption}"></TextBlock>
+                        <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Width="400" Text="{Binding Command}"></TextBlock>
+                        <!--<TextBlock HorizontalAlignment="Right" TextAlignment="Center" Width="266"   Text="{Binding Location}"></TextBlock>-->
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
@@ -30,7 +30,7 @@
                 <ContextMenu DataContext="{Binding}" >
                     <MenuItem Header="打开文件所在位置" PreviewMouseLeftButtonDown="OpenFileDirClick"></MenuItem>
                     <MenuItem Header="属性" PreviewMouseLeftButtonDown="OnOpenItemAtrributeClick"  ></MenuItem>
-                    <MenuItem Header="禁用" PreviewMouseLeftButtonDown="OnForbiddenItemClick" ></MenuItem>
+                    <!--<MenuItem Header="禁用" PreviewMouseLeftButtonDown="OnForbiddenItemClick" ></MenuItem>-->
                 </ContextMenu>
             </ListView.ContextMenu>
         </ListView>

@@ -14,10 +14,20 @@ namespace AsyncSocketServer.AsyncSocketProtocol
     public class ServerProtocol:ProtocolBase
     {
         public event EventHandler<ObservableCollection<ServerInfo>> GetServerList;
-        public void DealData(byte[] ValidData)
+      
+
+        public void DealData(byte[] data, MessageType mtType)
+        {
+            if (mtType == MessageType.GetServerList)
+            {
+                ShowServerList(data);
+            }
+        }
+
+        private void ShowServerList(byte[] data)
         {
             BinaryFormatter bf = new BinaryFormatter();
-            MemoryStream ms = new MemoryStream(ValidData);
+            MemoryStream ms = new MemoryStream(data);
             ms.Position = 0;
             List<ServerInfo> serverInfos = bf.Deserialize(ms) as List<ServerInfo>;
             if (GetServerList != null)

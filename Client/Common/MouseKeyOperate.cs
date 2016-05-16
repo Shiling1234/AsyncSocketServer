@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
@@ -29,6 +30,7 @@ namespace Client.Common
         Down = 0x0000,
         Up = 0x0002,
     }
+    [SuppressUnmanagedCodeSecurityAttribute]
     public class MouseKeyOperate
     {
          //鼠标事件函数

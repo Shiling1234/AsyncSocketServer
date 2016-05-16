@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AsyncSocketServer.Common;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,16 +8,24 @@ using System.Threading.Tasks;
 
 namespace AsyncSocketServer.AsyncSocketProtocol
 {
-    public class RemoteDestopProtocol
+    public class RemoteDestopProtocol : ProtocolBase
     {
         public event EventHandler<MemoryStream> GetDestopImage;
-        public void DealData(byte[] ValidData)
+     
+
+        public void DealData(byte[] data, MessageType msType)
         {
+            if (msType == MessageType.GetRemoteDestop)
+            {
+                ShowRemoteDestop(data);
+            }
+        }
 
-
-            MemoryStream ms = new MemoryStream(ValidData);
+        private void ShowRemoteDestop(byte[] data)
+        {
+            MemoryStream ms = new MemoryStream(data);
             ms.Position = 0;
-         //   List<StartUpItemInfo> startUpItemInfos = bf.Deserialize(ms) as List<StartUpItemInfo>;
+
             if (GetDestopImage != null)
             {
                 GetDestopImage(this, ms);

@@ -14,16 +14,25 @@ namespace AsyncSocketServer.AsyncSocketProtocol
    public class RegistryProtocol:ProtocolBase
     {
         public event EventHandler<ObservableCollection<RegistryInfo>> GetSubRegistryList;
-       public  void DealData(byte[] ValidData)
-       {
-           BinaryFormatter bf = new BinaryFormatter();
-           MemoryStream ms = new MemoryStream(ValidData);
-           ms.Position = 0;
-           List<RegistryInfo> registryInfos = bf.Deserialize(ms) as List<RegistryInfo>;
-           if (GetSubRegistryList != null)
-           {
-               GetSubRegistryList(this, new ObservableCollection<RegistryInfo>(registryInfos));
-           }
-       }
+       
+
+        public void DealData(byte[] data, MessageType message)
+        {
+            ShowRegeditList(data);
+        }
+
+        private void ShowRegeditList(byte[] data)
+        {
+         
+        BinaryFormatter bf = new BinaryFormatter();
+        MemoryStream ms = new MemoryStream(data);
+        ms.Position = 0;
+        List<RegistryInfo> registryInfos = bf.Deserialize(ms) as List<RegistryInfo>;
+        if (GetSubRegistryList != null)
+        {
+            GetSubRegistryList(this, new ObservableCollection<RegistryInfo>(registryInfos));
+            
+        }
+    }
     }
 }

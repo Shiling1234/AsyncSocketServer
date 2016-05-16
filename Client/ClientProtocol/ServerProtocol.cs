@@ -17,7 +17,7 @@ namespace Client.ClientProtocol
 {
     public class ServerProtocol : ProtocolBase
     {
-        public override Stream PacketData(string data)
+        public override byte[] GenerateMsg(String data)
         {
             List<ServerInfo> serverInfos = new List<ServerInfo>();
             MemoryStream ms = new MemoryStream();
@@ -66,17 +66,16 @@ namespace Client.ClientProtocol
                 bf.Serialize(ms, serverInfos);
             }
 
-            return ms;
+            return ms.ToArray();
         }
         public void SendRequsetMsg(string msgType)
         {
-            Stream s = this.PacketData(msgType);
-            this.SplitSendData(App.client, s, 1024 * 1024, 500);
+            byte[] bytes = this.GenerateMsg(msgType);
+            this.SplitSendData(App.client, bytes, 1024 * 1024, 500);
         }
 
         internal void StartServer(string serverInfo)
         {
-
             ServiceController sc = new ServiceController(serverInfo);
             sc.WaitForStatus(ServiceControllerStatus.Stopped);
             try
@@ -116,7 +115,6 @@ namespace Client.ClientProtocol
             }
             catch (Exception ex)
             {
-
                 MessageBox.Show(ex.Message);
             }
 

@@ -17,22 +17,11 @@ namespace Client.ClientProtocol
     {
         ScreenShot screenShot = new ScreenShot();
 
-        public override System.IO.Stream PacketData(string data)
+        public override byte[] GenerateMsg(String data)
         {
-            MemoryStream memoryStream=null;
-            if (data == "DestopImage")
-            {
-             
-             // BitmapSource bitmapSource = ScreenShotEx.CreateBitmapSourceFromBitmap();
-                BitmapSource bitmapSource = screenShot.TakeScreenshotCore();
-                memoryStream =new MemoryStream();
-              JpegBitmapEncoder encoder = new JpegBitmapEncoder();
-              memoryStream = new MemoryStream();
-              encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
-              encoder.Save(memoryStream);
-              
-            }
-            return new MemoryStream( CompressionImage(memoryStream,0L));
+            MemoryStream ms = ScreenShotEx.CreateBitmapSourceFromBitmap();
+            App.log.InfoFormat("压缩前大小：{0}", ms.Length);
+            return CompressionImage(ms,20L);
         }
 
 
@@ -52,6 +41,9 @@ namespace Client.ClientProtocol
                         bitmap.Save(ms, CodecInfo, myEncoderParameters);
                         myEncoderParameters.Dispose();
                         myEncoderParameter.Dispose();
+                        // fileStream.Close();
+                        //fileStream.Dispose();
+                        App.log.InfoFormat("压缩后大小：{0}", ms.Length);
                         return ms.ToArray();
                     }
                 }
@@ -71,42 +63,44 @@ namespace Client.ClientProtocol
             }
             return null;
         }
-
+        Thread sendDestpThr;
        public void SendRemoteDestop()
        {
-            Thread sendDestpThr = new Thread(new ThreadStart(SendDestopImage));
-            sendDestpThr.Start();
+            sendImage = true;
+            if (sendDestpThr == null)
+            {
+                sendDestpThr = new Thread(new ThreadStart(SendDestopImage));
+                sendDestpThr.Start();
+            }
+          
           
        }
-
+     static   bool sendImage = true;
        private void SendDestopImage()
        {
 
-           while (true)
+           while (sendImage)
            {
-               Stream s = PacketData("DestopImage");
-            
-               this.SplitSendData(App.client, s, 1024 * 1024, 700);
-               
-               
+               byte[] bytes = GenerateMsg("DestopImage");           
+               this.SplitSendData(App.client, bytes, 1024 * 1024, 700);    
                Thread.Sleep(300);
            }
 
        }
-
-       internal void KeyDown(string keyDownMsg)
+        MouseKeyOperate mko = new MouseKeyOperate();
+        internal void KeyDown(string keyDownMsg)
        {
            Console.WriteLine(keyDownMsg);
-           MouseKeyOperate mko = new MouseKeyOperate();
-           mko.keybd(mko.getKeys(keyDownMsg));
+        
+         //  mko.keybd(mko.getKeys(keyDownMsg));
           
        }
 
        internal void KeyUp(string keyUpMsg)
        {
            Console.WriteLine(keyUpMsg);
-           MouseKeyOperate mko = new MouseKeyOperate();
-           mko.keybd(mko.getKeys(keyUpMsg));
+       
+         //  mko.keybd(mko.getKeys(keyUpMsg));
        }
 
        internal void MouseLeftDown(string MouseLeftDownMsg)
@@ -114,29 +108,29 @@ namespace Client.ClientProtocol
            string[] pos = MouseLeftDownMsg.Split(new char[] {'|'}, StringSplitOptions.RemoveEmptyEntries);
            int x = (int)Convert.ToDouble(pos[0]);
            int y = (int)Convert.ToDouble(pos[1]);
-           MouseKeyOperate mko=new MouseKeyOperate();
-           mko.mouse_move(x,y);
-           mko.MouseLeftDown(x,y);
-       }
+            Console.WriteLine("MouseLeftDown");
+            mko.mouse_move(x, y);
+            mko.MouseLeftDown(x, y);
+        }
 
        internal void MouseLeftUp(string MouseLeftUpMsg)
        {
            string[] pos = MouseLeftUpMsg.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
            int x = (int)Convert.ToDouble(pos[0]);
            int y = (int)Convert.ToDouble(pos[1]);
-           MouseKeyOperate mko = new MouseKeyOperate();
-           mko.mouse_move(x, y);
-           mko.MouseLeftUp(x, y);
-       }
+            Console.WriteLine("MouseLeftUp");
+            mko.mouse_move(x, y);
+            mko.MouseLeftUp(x, y);
+        }
 
        internal void MouseRightDown(string MouseRightDownMsg)
        {
            string[] pos = MouseRightDownMsg.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
            int x = (int)Convert.ToDouble(pos[0]);
            int y = (int)Convert.ToDouble(pos[1]);
-           MouseKeyOperate mko = new MouseKeyOperate();
-           mko.mouse_move(x, y);
-           mko.MouseRightDown(x, y);
+            Console.WriteLine("MouseRightDown(");
+           //mko.mouse_move(x, y);
+           //mko.MouseRightDown(x, y);
        }
 
        internal void MouseRightUp(string MouseRightUpnMsg)
@@ -144,9 +138,20 @@ namespace Client.ClientProtocol
            string[] pos = MouseRightUpnMsg.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
            int x = (int)Convert.ToDouble(pos[0]);
            int y = (int)Convert.ToDouble(pos[1]);
-           MouseKeyOperate mko = new MouseKeyOperate();
-           mko.mouse_move(x, y);
-           mko.MouseRightUp(x, y);
+            Console.WriteLine("MouseRightUp");
+           //mko.mouse_move(x, y);
+           //mko.MouseRightUp(x, y);
        }
+
+        internal void CloseRemoteDestop()
+        {
+            sendImage = false;
+            if (sendDestpThr != null)
+            {
+                sendDestpThr.Abort();
+                sendDestpThr.Join();
+                sendDestpThr = null;
+            }
+        }
     }
 }

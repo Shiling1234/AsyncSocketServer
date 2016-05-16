@@ -1,18 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace AsyncSocketServer.View
@@ -27,37 +17,42 @@ namespace AsyncSocketServer.View
             InitializeComponent();
         }
 
-        private bool firstTime = true;
+        int times = 1;
         private void RemoteDestopView_OnLoaded(object sender, RoutedEventArgs e)
         {
-            if (firstTime)
+            MessageBoxResult result;
+            if (times == 1)
             {
-                firstTime = false;
+                times++;
                 return;
+
             }
-            MessageBoxResult result = MessageBox.Show("是否开启远程控制?", "tishi", MessageBoxButton.YesNo);
-            if (result == MessageBoxResult.Yes)
+            if (times == 2)
             {
-                string sendMsg = "DestopImage";
-                byte[] sendBytes = System.Text.Encoding.Default.GetBytes(sendMsg);
-                App.SplitSendData(App.server.userTokensList[0].ConnetSocket, sendBytes, 20, 700);
-                App.server.ProtocolIvokeElment.remoteDestopProtocol.GetDestopImage += remoteDestopProtocol_GetDestopImage;
+                times++;
+                result = MessageBox.Show("是否开启远程控制?", "提示", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    string sendMsg = "DestopImage";
+                    byte[] sendBytes = System.Text.Encoding.Default.GetBytes(sendMsg);
+                    App.SplitSendData(App.server.userTokensList[0].ConnetSocket, sendBytes, 20, 700);
+                    App.server.ProtocolIvokeElment.remoteDestopProtocol.GetDestopImage += remoteDestopProtocol_GetDestopImage;
+                }
+
             }
+
         }
 
         void remoteDestopProtocol_GetDestopImage(object sender, System.IO.MemoryStream e)
         {
-            using (var stream = e)
-            {
+           
                 var bitmap = new BitmapImage();
                 bitmap.BeginInit();
-                bitmap.StreamSource = stream;
+                bitmap.StreamSource = e;
                 bitmap.CacheOption = BitmapCacheOption.OnLoad;
                 bitmap.EndInit();
                 bitmap.Freeze();
-                this.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => { RemoteDestopImg.Source = bitmap; }));
-
-            }
+                this.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => { RemoteDestopImg.Source = bitmap; }));           
         }
 
         private void RemoteDestopImg_OnKeyDown(object sender, KeyEventArgs e)
@@ -74,36 +69,50 @@ namespace AsyncSocketServer.View
 
         private void RemoteDestopImg_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            byte[] sendBytes = System.Text.Encoding.Default.GetBytes(e.GetPosition(this).X.ToString()+"|"+e.GetPosition(this).Y.ToString());
+
+            double hor = imageScrollViewer.HorizontalOffset;
+            double ver = imageScrollViewer.VerticalOffset;
+            double conHor = imageScrollViewer.ContentHorizontalOffset;
+            double conver = imageScrollViewer.ContentVerticalOffset;
+
+            Console.WriteLine(hor + " " + ver + " " + conHor + " " + conver);
+
+            byte[] sendBytes = System.Text.Encoding.Default.GetBytes((e.GetPosition(this).X + hor).ToString() + "|" + (e.GetPosition(this).Y + ver).ToString());
             App.SplitSendData(App.server.userTokensList[0].ConnetSocket, sendBytes, 20, 703);
         }
 
         private void RemoteDestopImg_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            byte[] sendBytes = System.Text.Encoding.Default.GetBytes(e.GetPosition(this).X.ToString() + "|" + e.GetPosition(this).Y.ToString());
+            double hor = imageScrollViewer.HorizontalOffset;
+            double ver = imageScrollViewer.VerticalOffset;
+            byte[] sendBytes = System.Text.Encoding.Default.GetBytes((e.GetPosition(this).X + hor).ToString() + "|" + (e.GetPosition(this).Y + ver).ToString());
             App.SplitSendData(App.server.userTokensList[0].ConnetSocket, sendBytes, 20, 704);
         }
 
         private void RemoteDestopImg_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            byte[] sendBytes = System.Text.Encoding.Default.GetBytes(e.GetPosition(this).X.ToString() + "|" + e.GetPosition(this).Y.ToString());
+            double hor = imageScrollViewer.HorizontalOffset;
+            double ver = imageScrollViewer.VerticalOffset;
+            byte[] sendBytes = System.Text.Encoding.Default.GetBytes((e.GetPosition(this).X + hor).ToString() + "|" + (e.GetPosition(this).Y + ver).ToString());
             App.SplitSendData(App.server.userTokensList[0].ConnetSocket, sendBytes, 20, 705);
         }
 
         private void RemoteDestopImg_OnPreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            byte[] sendBytes = System.Text.Encoding.Default.GetBytes(e.GetPosition(this).X.ToString() + "|" + e.GetPosition(this).Y.ToString());
+            double hor = imageScrollViewer.HorizontalOffset;
+            double ver = imageScrollViewer.VerticalOffset;
+            byte[] sendBytes = System.Text.Encoding.Default.GetBytes((e.GetPosition(this).X + hor).ToString() + "|" + (e.GetPosition(this).Y + ver).ToString());
             App.SplitSendData(App.server.userTokensList[0].ConnetSocket, sendBytes, 20, 706);
         }
 
         private void RemoteDestopImg_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
-            throw new NotImplementedException();
+            // throw new NotImplementedException();
         }
 
         private void RemoteDestopView_OnKeyDown(object sender, KeyEventArgs e)
         {
-            throw new NotImplementedException();
+            // throw new NotImplementedException();
         }
     }
 }

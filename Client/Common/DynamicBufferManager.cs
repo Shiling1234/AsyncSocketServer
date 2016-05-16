@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AsyncSocketServer.AsyncSocketCore
+namespace Client.Common
 {
   public  class DynamicBufferManager
     {
 
         public byte[] Buffer { get; set; } //存放内存的数组
         public int DataCount { get; set; } //写入数据大小
+
         public DynamicBufferManager(int bufferSize)
         {
             DataCount = 0;

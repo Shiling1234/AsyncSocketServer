@@ -12,7 +12,7 @@ using System.Drawing.Imaging;
 using System.Drawing;
 using System.Runtime.InteropServices;
 
-namespace Client.Common
+namespace AsyncSocketServer.Common
 {
    static class ScreenShotEx
     {
@@ -31,14 +31,8 @@ namespace Client.Common
                 return null; // Is it possible?
             using (var bmpGraphics = Graphics.FromImage(bitmap))
             {
-                try
-                {
-                    bmpGraphics.CopyFromScreen(0, 0, 0, 0, bitmap.Size);
-                }
-                catch(Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+
+                bmpGraphics.CopyFromScreen(0, 0, 0, 0, bitmap.Size);
        
             }
 
@@ -48,7 +42,7 @@ namespace Client.Common
                 MemoryStream memoryStream = new MemoryStream();
                 // You need to specify the image format to fill the stream. 
                 // I'm assuming it is PNG
-                bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Jpeg);
+                bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
                 memoryStream.Seek(0, SeekOrigin.Begin);
                 return memoryStream;
 

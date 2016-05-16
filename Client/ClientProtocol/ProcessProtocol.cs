@@ -15,7 +15,8 @@ namespace Client.ClientProtocol
 {
     public class ProcessProtocol : ProtocolBase
     {
-        public override Stream PacketData(string data)
+
+        public override byte[] GenerateMsg(String data)
         {
             List<ProcessInfo> processInfos = new List<ProcessInfo>();
             MemoryStream ms = new MemoryStream();
@@ -57,22 +58,15 @@ namespace Client.ClientProtocol
                 {
                     MessageBox.Show("An error occurred while querying for WMI data: " + e.Message);
                 }
-
-
-
-              
-            
                 BinaryFormatter bf = new BinaryFormatter();
-
                 bf.Serialize(ms, processInfos);
             }
-
-            return ms;
+            return ms.ToArray();
         }
         public void SendRequsetMsg(string msgType)
         {
-            Stream s = this.PacketData(msgType);
-            this.SplitSendData(App.client, s, 1024 * 1024, 400);
+            byte[] bytes = this.GenerateMsg(msgType);
+            this.SplitSendData(App.client, bytes, 1024 * 1024, 400);
         }
 
         internal void KillProcess(string killProcessId)
@@ -130,7 +124,14 @@ namespace Client.ClientProtocol
 
         public void OpenProcessAtributeDialg(string openArtibuteDia)
         {
-            ArtibuteDialog.ShowFileProperties(openArtibuteDia);
+            try
+            {
+                ArtibuteDialog.ShowFileProperties(openArtibuteDia);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }

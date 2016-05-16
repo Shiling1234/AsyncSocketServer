@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AsyncSocketServer</RootNamespace>
     <AssemblyName>AsyncSocketServer</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -47,6 +47,9 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\..\..\新建文件夹\bin\net\4.5\release\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -70,6 +73,7 @@
     <Compile Include="AsyncSocketCore\BufferManager.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="AsyncSocketCore\DynamicBufferManager.cs" />
     <Compile Include="AsyncSocketCore\ProtocolIvokeElment.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -90,6 +94,7 @@
     <Compile Include="PopupWin\UpdateRegedit.xaml.cs">
       <DependentUpon>UpdateRegedit.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\ScreenShotEx.cs" />
     <Compile Include="ViewModel\Converter\ServerDescConverter.cs" />
     <Compile Include="ViewModel\StartUpItemInfoViewModel.cs" />
     <Compile Include="ViewModel\FileObjectViewModel.cs" />
@@ -127,7 +132,7 @@
     </Compile>
     <Compile Include="AsyncSocketCore\AsyncUserToken.cs" />
     <Compile Include="AsyncSocketCore\Server.cs" />
-    <Compile Include="AsyncSocketCore\SocketAsyncEventArgsPool.cs" />
+    <Compile Include="AsyncSocketCore\AsyncUserTokenPool.cs" />
     <Compile Include="AsyncSocketProtocol\FileManagerProtocol.cs" />
     <Compile Include="AsyncSocketProtocol\MessageProtocol.cs" />
     <Compile Include="AsyncSocketProtocol\RegistryProtocol.cs" />
@@ -199,7 +204,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="ClassDiagram1.cd" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

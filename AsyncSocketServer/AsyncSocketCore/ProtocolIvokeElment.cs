@@ -6,33 +6,22 @@ using System.Text;
 using System.Windows.Controls;
 using AsyncSocketServer.AsyncSocketProtocol;
 using PublicLibrary;
+using System.ComponentModel;
+using AsyncSocketServer.Common;
 
 namespace AsyncSocketServer.AsyncSocketCore
 {
 
-
-    enum OperateType
-    {
-        Message = 1,
-        File = 2,
-    }
-
     public class ProtocolIvokeElment
     {
-        //public event EventHandler<ObservableCollection<FileObject>> GetFileList;
-        //public delegate void MessageHandler(string message);
-
-        public MessageProtocol MessageProtocol;
-        public readonly FileManagerProtocol fileManagerProtocol = new FileManagerProtocol();
-        public readonly RegistryProtocol registryProtocol = new RegistryProtocol();
-        public readonly ProcessProtocol processProtocol = new ProcessProtocol();
-        public readonly ServerProtocol serverProtocol = new ServerProtocol();
+        public MessageProtocol MessageProtocol = new MessageProtocol();
+        public FileManagerProtocol fileManagerProtocol = new FileManagerProtocol();
+        public RegistryProtocol registryProtocol = new RegistryProtocol();
+        public ProcessProtocol processProtocol = new ProcessProtocol();
+        public ServerProtocol serverProtocol = new ServerProtocol();
         public StartUpProtocol StartUpProtocol = new StartUpProtocol();
-        public RemoteDestopProtocol remoteDestopProtocol=new RemoteDestopProtocol();
+        public RemoteDestopProtocol remoteDestopProtocol = new RemoteDestopProtocol();
         public AsyncUserToken UserToken;
-        byte[] data;
-        int offset = 0;
-
         public ProtocolIvokeElment()
         {
             MessageProtocol = new MessageProtocol();
@@ -43,89 +32,33 @@ namespace AsyncSocketServer.AsyncSocketCore
         /// </summary>
         public void AnalyzePartMessage()
         {
-
-
             bool continueDeal = true;
-
             while (continueDeal)
             {
-                if (UserToken.ReceieveBufferOffset > 5 * sizeof(int))
+                if (UserToken.DynamicBufferManager.DataCount > 5 * sizeof(int))
                 {
-                    int singlePacketLen = BitConverter.ToInt32(UserToken.ReceieveByteBuffer, 0);
-                    int totalLen = BitConverter.ToInt32(UserToken.ReceieveByteBuffer, 4);
-                    int ID = BitConverter.ToInt32(UserToken.ReceieveByteBuffer, 8);
-                    int maxID = BitConverter.ToInt32(UserToken.ReceieveByteBuffer, 12);
-                    int messageType = BitConverter.ToInt32(UserToken.ReceieveByteBuffer, 16);
-                    //全部分包一次性被接收完毕
-                    if (UserToken.ReceieveBufferOffset >= singlePacketLen)
+                    MessageFormat packetMsg=  AnalyzeProtocol();
+                    if (UserToken.DynamicBufferManager.DataCount >= packetMsg.singlePacketLen)
                     {
-
-                        if (ID == 1)
+                        //  App.log.InfoFormat("singlePacketLen:{0},totoalLen:{1},ID:{2},maxID:{3},meessageType:{4}", singlePacketLen, totalLen, ID, maxID, messageType);
+                        if (packetMsg.ID == 1)
                         {
-                            data = new byte[totalLen - 20 * maxID];
+                            BindProtocol(UserToken, packetMsg.PacketType);
                         }
-
-                        Array.Copy(UserToken.ReceieveByteBuffer, 20, data, offset, singlePacketLen - 20);
-                        offset += singlePacketLen - 20;
-                        //复制完毕,缓冲池前移动
-                        Array.Copy(UserToken.ReceieveByteBuffer, singlePacketLen, UserToken.ReceieveByteBuffer, 0,
-                        UserToken.ReceieveBufferOffset - singlePacketLen);
-                        //读取完成后将offset前移。
-                        UserToken.ReceieveBufferOffset -= singlePacketLen;
-
-                        if (ID == maxID)
+                         UserToken.DataBufferManager.WriteBuffer(UserToken.DynamicBufferManager.Buffer, 20, packetMsg.singlePacketLen - 20);
+                        UserToken.DynamicBufferManager.Clear(packetMsg.singlePacketLen);
+                        if (packetMsg.ID == packetMsg.maxID)
                         {
-                            offset = 0;
-                            // BindProtocol(messageType);
-                            if (messageType == 1)
-                            {
-                                if (this.MessageProtocol == null)
-                                {
-                                    MessageProtocol = new MessageProtocol();
-                                }
-
-                                MessageProtocol.DealData(data);
-                            }
-                            //获取文件列表
-                            if (messageType == 200)
-                            {
-                                fileManagerProtocol.DealData(data);
-                            }
-                            //接收文件
-                            if (messageType == 201)
-                            {
-                                fileManagerProtocol.ReceieveFile(data);
-                            }
-                            if (messageType == 202)
-                            {
-                                fileManagerProtocol.FileTransferCompleted(data);
-                            }
-                            if (messageType == 300)
-                            {
-                                //处理注册表
-                                registryProtocol.DealData(data);
-                            }
-                            if (messageType == 400)
-                            {
-                                processProtocol.DealData(data);
-                            }
-                            if (messageType == 500)
-                            {
-                                serverProtocol.DealData(data);
-                            }
-                            if (messageType == 600)
-                            {
-                                StartUpProtocol.DealData(data);
-                            }
-                            if (messageType == 700)
-                            {
-                             remoteDestopProtocol.DealData(data);   
-                            }
+                          //  UserToken.TransportProtocol.DealData(UserToken.DynamicBufferManager.Buffer, (MessageType)packetMsg.PacketType, 20, packetMsg.singlePacketLen - 20);
+                           // UserToken.DynamicBufferManager.Clear(packetMsg.singlePacketLen);
+                            //   App.log.InfoFormat("收到{0}大小的{1}的数据包,准备解析",UserToken.DataBufferManager.DataCount, ((MessageType)messageType));
+                            UserToken.TransportProtocol.DealData(UserToken.DataBufferManager.Buffer, (MessageType)packetMsg.PacketType);
+                            UserToken.DataBufferManager.Clear();
+                            //   App.log.InfoFormat("数据包解析完成");
                         }
                     }
                     else
                     {
-                        //发送的包最后有余下来的一点字节,也不用处理了，继续等待
                         continueDeal = false;
                     }
                 }
@@ -139,36 +72,53 @@ namespace AsyncSocketServer.AsyncSocketCore
         }
 
 
+    
+        public MessageFormat AnalyzeProtocol()
+        {
+            MessageFormat result = new MessageFormat();
+            result.singlePacketLen = BitConverter.ToInt32(UserToken.DynamicBufferManager.Buffer, 0);
+            result.totoalLen = BitConverter.ToInt32(UserToken.DynamicBufferManager.Buffer, 4);
+            result.ID = BitConverter.ToInt32(UserToken.DynamicBufferManager.Buffer, 8);
+            result.maxID = BitConverter.ToInt32(UserToken.DynamicBufferManager.Buffer, 12);
+            result.PacketType = BitConverter.ToInt32(UserToken.DynamicBufferManager.Buffer, 16);
+            BindProtocol(UserToken, result.PacketType);
+            return result;
+        }
+
         /// <summary>
         /// 根据传输数据的首位为当前token绑定协议
         /// </summary>
         /// <param name="ValidData"></param>
-        public void BindProtocol(int messageType)
+        public void BindProtocol(AsyncUserToken userToken, int messageType)
         {
-
-            //switch (messageType)
-            //{
-            //    //case 0:
-            //    //    UserToken.TransportProtocol = new FileManagerProtocol();
-            //    //    break;
-            //    //case 1:
-            //    //    UserToken.TransportProtocol = new FileManagerProtocol();
-            //    //    break;
-            //    //case 2:
-            //    //    UserToken.TransportProtocol = new RegistryProtocol();
-            //    //    break;
-            //}
-
-
+            MessageType mt = (MessageType)messageType;
+            switch (mt)
+            {
+                case MessageType.GetFileList:
+                    UserToken.TransportProtocol = fileManagerProtocol;
+                    break;
+                case MessageType.FileTransferCompleted:
+                    UserToken.TransportProtocol = fileManagerProtocol;
+                    break;
+                case MessageType.ReceieveFile:
+                    UserToken.TransportProtocol = fileManagerProtocol;
+                    break;
+                case MessageType.GetProcessList:
+                    UserToken.TransportProtocol = processProtocol;
+                    break;
+                case MessageType.GetRegistryList:
+                    UserToken.TransportProtocol = registryProtocol;
+                    break;
+                case MessageType.GetRemoteDestop:
+                    UserToken.TransportProtocol = remoteDestopProtocol;
+                    break;
+                case MessageType.GetServerList:
+                    UserToken.TransportProtocol = serverProtocol;
+                    break;
+                case MessageType.GetStartUpList:
+                    UserToken.TransportProtocol = StartUpProtocol;
+                    break;
+            }
         }
-
-
-
-
-
-
-
-
-
     }
 }

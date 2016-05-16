@@ -23,6 +23,7 @@ using AsyncSocketServer.Common;
 using Microsoft.Win32;
 using PublicLibrary.Model;
 
+
 namespace AsyncSocketServer.View
 {
     /// <summary>
@@ -34,44 +35,82 @@ namespace AsyncSocketServer.View
         public Other()
         {
             InitializeComponent();
+            App.Current.Exit += Current_Exit;
         }
+
+        private void Current_Exit(object sender, ExitEventArgs e)
+        {
+            if (t != null)
+            {
+                t.Abort();
+                t.Join();
+            }
+            client.Close();
+          
+        
+            client = null;
+        }
+        Thread t;
         private bool firstTime = true;
-        ObservableCollection<ClientInfo> clientInfos=new ObservableCollection<ClientInfo>(); 
-        private UdpClient client = new UdpClient(new IPEndPoint(IPAddress.Parse("127.0.0.1"),6666));
-        IPEndPoint multicast = new IPEndPoint(IPAddress.Parse("234.5.6.7"), 7788);
+        ObservableCollection<ClientInfo> clientInfos=new ObservableCollection<ClientInfo>();
+        private UdpClient client=new UdpClient();
+        IPEndPoint multicast = new IPEndPoint(IPAddress.Parse("234.5.6.7"),8888);
+        int times = 1;
         private void Other_OnLoaded(object sender, RoutedEventArgs e)
         {
 
-            if (firstTime)
+            if (times==1)
             {
-
-                firstTime = false;
-            
+                times++;
+                firstTime = false;  
                 return;
             }
-            this.allClientListView.ItemsSource = clientInfos;
-             client.JoinMulticastGroup(IPAddress.Parse("234.5.6.7"));
-             ThreadPool.QueueUserWorkItem(new WaitCallback(ReceieveData));
-            //发送端无需管任何东西，只要往组播地址上发送东西即可。
-            
-            byte[] buf = Encoding.Default.GetBytes("Hello from multicast");
-            //  Thread t = new Thread(new ThreadStart(RecvThread));
-            //   t.IsBackground = true;
-            //  t.Start();
-            App.SplitSendDataUdp(client, multicast, buf, 1000, 2,0);
-       //     client.Send(buf, buf.Length, multicast);
+            if (times == 2)
+            {
+             
+                times++;
+                this.allClientListView.ItemsSource = clientInfos;
+                client.JoinMulticastGroup(IPAddress.Parse("234.5.6.7"));
+                t = new Thread(new ThreadStart(ReceieveData));
+                t.IsBackground = true;
+                t.Start();
+                byte[] buf = Encoding.Default.GetBytes("Hello from multicast");
+           
+                App.SplitSendDataUdp(client, multicast, buf, 1000, 2, 0);
+
+            }
+
+          
+            //     client.Send(buf, buf.Length, multicast);
             //Thread.Sleep(1000);
 
 
         }
         Regex ipRegex = new Regex(@"^\d+\.\d+\.\d+\.\d+$");
-        private void ReceieveData(object state)
+        IPEndPoint any = null;
+        private void ReceieveData()
         {
             while (true)
             {
-
-
-                byte[] buf = client.Receive(ref multicast);
+                if (client == null)
+                {
+                    return;
+                }
+                    if (client.Available <= 0) continue;
+                
+                byte[] buf;
+                try
+                {
+                    buf = client.Receive(ref any);
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    client.Close();
+                 
+                    client = null;
+                    return;
+                }
                 string msg = Encoding.Default.GetString(buf);
                 if (ipRegex.IsMatch(msg))
                 {
@@ -126,13 +165,11 @@ namespace AsyncSocketServer.View
 
                 //int packetIndex = (int) obj;
                 MemoryStream memoryStream = null;
-
-                BitmapSource bitmapSource = ScreenShot.CopyScreen();
-                JpegBitmapEncoder encoder = new JpegBitmapEncoder();
-                memoryStream = new MemoryStream();
-                encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
-                encoder.Save(memoryStream);
+                memoryStream=   ScreenShotEx.CreateBitmapSourceFromBitmap();
+               
                 destop = memoryStream.ToArray();
+               memoryStream.Dispose();
+                memoryStream.Close();
                 SplitSendDestop(destop,0);
    
                // client.Send(destop, destop.Length,multicast);
@@ -140,7 +177,7 @@ namespace AsyncSocketServer.View
 
         private void SplitSendDestop(byte[] destop,int packetIndex)
         {
-            int packetNum=  App.GetPackNum(destop, 1000);
+      
             App.SplitSendDataUdp(client, multicast, destop, 1000, 1, packetIndex);
          
         }
@@ -160,6 +197,8 @@ namespace AsyncSocketServer.View
 
           
         }
+
+       
 
         private bool fileSendFinish=false;
         private byte[] fileBytes;
@@ -194,8 +233,7 @@ namespace AsyncSocketServer.View
         }
 
         private void SplitSendFile(byte[] bytes, int p)
-        {
-            int packetNum = App.GetPackNum(fileBytes, 1000);
+        { 
             App.SplitSendDataUdp(client, multicast, fileBytes, 1000, 3, p);
         }
     }

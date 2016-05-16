@@ -21,17 +21,12 @@ namespace AsyncSocketServer
     /// </summary>
     public partial class MainWindow : Window
     {
-
-        private ObservableCollection<FileObject> initalFileList;
         public MainWindow()
         {
             App.server = new Server(1, 1024 * 1024);
-
             this.Loaded += MainWindow_Loaded;
-            InitializeComponent();
-           
+            InitializeComponent();        
         }
-
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
@@ -51,7 +46,6 @@ namespace AsyncSocketServer
 
         private void UIElement_OnKeyDown(object sender, KeyEventArgs e)
         {
-           // throw new NotImplementedException();
             byte[] sendBytes = System.Text.Encoding.Default.GetBytes(e.Key.ToString());
             App.SplitSendData(App.server.userTokensList[0].ConnetSocket, sendBytes, 20, 701);
         }
@@ -60,6 +54,21 @@ namespace AsyncSocketServer
         {
             byte[] sendBytes = System.Text.Encoding.Default.GetBytes(e.Key.ToString());
             App.SplitSendData(App.server.userTokensList[0].ConnetSocket, sendBytes, 20, 702);
+        }
+
+        private void OnCloseRemoteDestop(object sender, MouseButtonEventArgs e)
+        {
+            string sendMsg = "CloseDestopImage";
+            byte[] sendBytes = System.Text.Encoding.Default.GetBytes(sendMsg);
+            App.SplitSendData(App.server.userTokensList[0].ConnetSocket, sendBytes, 20, 707);
+        }
+
+        private void OnOpenRemoteDestop(object sender, MouseButtonEventArgs e)
+        {
+            string sendMsg = "DestopImage";
+            byte[] sendBytes = System.Text.Encoding.Default.GetBytes(sendMsg);
+            App.SplitSendData(App.server.userTokensList[0].ConnetSocket, sendBytes, 20, 700);
+            
         }
     }
 }

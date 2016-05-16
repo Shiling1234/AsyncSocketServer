@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using System.Security;
+
 namespace Client.Common
 {
     [StructLayout(LayoutKind.Sequential)]
@@ -29,9 +31,9 @@ namespace Client.Common
         public uint dwHotKey;
         public IntPtr hIcon;
         public IntPtr hProcess;
-    } 
-
-  public  class ArtibuteDialog
+    }
+    [SuppressUnmanagedCodeSecurityAttribute]
+    public  class ArtibuteDialog
     {
         private const int SW_SHOW = 5;
         private const uint SEE_MASK_INVOKEIDLIST = 12;

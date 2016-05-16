@@ -9,11 +9,16 @@ namespace AsyncSocketServer.AsyncSocketProtocol
 {
     public class MessageProtocol:ProtocolBase
     {
-        public  string DealData(byte[] ValidData)
+        public  string DealData(byte[] ValidData,MessageType messType)
         {
             String message = System.Text.Encoding.Default.GetString(ValidData);
             Console.WriteLine(message);
             return message;
+        }
+
+        void ProtocolBase.DealData(byte[] data, MessageType message)
+        {
+            throw new NotImplementedException();
         }
     }
 }

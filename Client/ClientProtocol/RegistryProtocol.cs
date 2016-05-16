@@ -22,7 +22,8 @@ namespace Client.ClientProtocol
         /// </summary>
         /// <param name="data">某一注册表项全称 </param>
         /// <returns></returns>
-        public override System.IO.Stream PacketData(string data)
+       
+        public override byte[] GenerateMsg(String data)
         {
             string[] roots = new string[5]
             {
@@ -89,14 +90,10 @@ namespace Client.ClientProtocol
                 BinaryFormatter bf = new BinaryFormatter();
                 MemoryStream ms = new MemoryStream();
                 bf.Serialize(ms, registryInfos);
-                return ms;
-
-
-
+                return ms.ToArray();
             }
             else
             {
-
                 //非根目录
                 //  HKEY_CLASSES_ROOT\ADODB.Error\CLSID
                 int index = data.IndexOf("\\");
@@ -144,17 +141,14 @@ namespace Client.ClientProtocol
                 BinaryFormatter bf = new BinaryFormatter();
                 MemoryStream ms = new MemoryStream();
                 bf.Serialize(ms, registryInfos);
-
-                return ms;
-
-
+                return ms.ToArray();
             }
         }
 
         public void SendRegistry(string registryKey)
         {
-            Stream s = this.PacketData(registryKey);
-            this.SplitSendData(App.client, s, 1024*1024, 300);
+            byte[] bytes = this.GenerateMsg(registryKey);
+            this.SplitSendData(App.client, bytes, 1024*1024, 300);
         }
 
         internal void CreateNewRegedit(string newKey)

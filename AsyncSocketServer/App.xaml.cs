@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using AsyncSocketServer.AsyncSocketCore;
 using PublicLibrary;
-
+using log4net;
 
 namespace AsyncSocketServer
 {
@@ -21,12 +21,27 @@ namespace AsyncSocketServer
     /// </summary>
     public partial class App : Application
     {
+        
         public static Server server;
         public static string downLoadPath;
+        public static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            if (File.Exists("logs\\log.txt")) { File.Delete("logs\\log.txt"); }
+            log4net.Config.XmlConfigurator.Configure();
+            base.OnStartup(e);
+            log.Info("==Startup=====================>>>");
+        }
+        protected override void OnExit(ExitEventArgs e)
+        {
+            log.Info("<<<========================End==");
+            base.OnExit(e);
+        }
+
 
         public static  void SplitSendData(Socket client, byte[] bytes, int singlePacketLen, int PacketType)
         {
-           
+          
             int len = bytes.Length;
             int packetNum = bytes.Length / singlePacketLen + 1;
             int lastPacketLen = bytes.Length % singlePacketLen;

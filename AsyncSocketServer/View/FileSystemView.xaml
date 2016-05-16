@@ -11,10 +11,12 @@
         <ObjectDataProvider x:Key="DataProvider" ObjectType="viewModel:FileObjectViewModel" MethodName="GetInitialView"></ObjectDataProvider>
     </UserControl.Resources>
     <Grid Margin="0" >
-        <Grid.ColumnDefinitions>
+       
+            <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"></ColumnDefinition>
             <ColumnDefinition Width="3*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
+       
         <TreeView Grid.Column="0"  DataContext="{StaticResource DataProvider}" ItemsSource="{Binding Childen}" Name="fileTreeView"
                   VirtualizingStackPanel.IsVirtualizing="True"
               VirtualizingStackPanel.VirtualizationMode="Recycling">
@@ -33,6 +35,7 @@
                 </Style>
             </TreeView.ItemContainerStyle>
         </TreeView>
+        
                 <ListView Name="detailListView" Grid.Column="1"  >
             <ListView.ItemTemplate>
                <DataTemplate>

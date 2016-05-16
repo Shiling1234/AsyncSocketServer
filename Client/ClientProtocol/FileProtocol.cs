@@ -13,12 +13,13 @@ using System.Windows.Documents;
 using Client.Common;
 using Path = System.Windows.Shapes.Path;
 using PublicLibrary;
+using System.Threading;
 
 namespace Client.ClientProtocol
 {
     class FileProtocol : ProtocolBase
     {
-        public override Stream PacketData(String path)
+        public override byte[] GenerateMsg(String path)
         {
             List<FileObject> fileInfoList = new List<FileObject>();
             if (path == "root")
@@ -35,7 +36,6 @@ namespace Client.ClientProtocol
                       
                     }
                 }
-
             }
             else
             {
@@ -47,7 +47,6 @@ namespace Client.ClientProtocol
                 catch
                 {
                     files = new string[0];
-
                 }
                 foreach (String file in files)
                 {
@@ -73,10 +72,7 @@ namespace Client.ClientProtocol
             BinaryFormatter bf = new BinaryFormatter();
             MemoryStream ms = new MemoryStream();
             bf.Serialize(ms, fileInfoList);
-
-            return ms;
-
-
+            return ms.ToArray();
         }
 
         public bool IsFile(string filepath)
@@ -90,25 +86,57 @@ namespace Client.ClientProtocol
                 return true;
             }
         }
-
-        public async void SendFile(string path)
+        Thread t ;
+        public  void SendFile(string path)
         {
-            byte[] bytes = new byte[1024 * 1024];
-            using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate))
-            {
-                int len;
-                while ((len = fs.Read(bytes, 0, bytes.Length)) > 0)
-                {
-                    byte[] sendBytes = new byte[len];
-                    Buffer.BlockCopy(bytes, 0, sendBytes, 0, len);
-                    App.SplitSendData(App.client, sendBytes, 1024 * 1024, 201);
-                }
+                t = new Thread(new ParameterizedThreadStart(SendFileImp));
+                t.Start(path);
+        }
 
+        private void SendFileImp(object obj)
+        {
+            string path = (String)obj;
+            byte[] bytes = new byte[1024 * 32];
+            try
+            {
+                using (FileStream fs = new FileStream(path, FileMode.Open,FileAccess.ReadWrite))
+                {
+                    int len;
+                    while ((len = fs.Read(bytes, 0, bytes.Length)) > 0)
+                    {
+                        if (len == bytes.Length)
+                        {
+                            this.SplitSendData(App.client, bytes, 1024 * 32, 201);
+                        }
+                        else  if (len > 0 && len < bytes.Length)
+                        {
+                            byte[] sendBytes = new byte[len];
+                            Buffer.BlockCopy(bytes, 0, sendBytes, 0, len);
+                            this.SplitSendData(App.client, sendBytes, 1024 * 32, 201);
+                        }
+                       
+                    }
+
+
+                }
+                string sendFileOver = "文件" + path + "传送完毕";
+                byte[] fileOver = System.Text.Encoding.Default.GetBytes(sendFileOver);
+                this.SplitSendData(App.client, fileOver, 1024, 202);
+            
+            }
+            catch (Exception ex)
+            {
+                App.log.Error(ex.StackTrace);
+                byte[] fileOver = System.Text.Encoding.Default.GetBytes(ex.Message);
+                App.SplitSendData(App.client, fileOver, 1024, 203);
+            }
+            finally
+            {
+                t.Abort();
+                t.Join();
+                t = null;
 
             }
-            string sendFileOver = "文件" + path + "传送完毕";
-            byte[] fileOver = System.Text.Encoding.Default.GetBytes(sendFileOver);
-            App.SplitSendData(App.client, fileOver, 1024, 202);
         }
 
         public void RunFile(string file)
@@ -121,8 +149,6 @@ namespace Client.ClientProtocol
             {
                 MessageBox.Show("file run error,error message :{0}", fileOpenException.Message);
             }
-
-
         }
 
         public void OpenFileDir(string file)
@@ -142,6 +168,6 @@ namespace Client.ClientProtocol
             string oldFileName = oldAndNewFile[0];
             string newFileName = System.IO.Path.GetDirectoryName(oldFileName) + "\\" + oldAndNewFile[1];
             File.Move(oldFileName,newFileName);
-        }
+        }      
     }
 }

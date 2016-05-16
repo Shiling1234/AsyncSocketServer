@@ -4,7 +4,7 @@
         xmlns:view="clr-namespace:AsyncSocketServer.View"
         Title="局域网远程控制系统" Width="800" Height="600">
     <Grid Width="800" >
-
+        <ProgressBar  Name="TransProgressBar" Maximum="{Binding  App.server.ProtocolIvokeElment.DisplayMax}" Background="Red"  Value="{Binding App.server.ProtocolIvokeElment.DisplayCurrent}"></ProgressBar>
         <TabControl >
             <TabItem Header="文件管理">
                 <Grid>
@@ -14,7 +14,7 @@
             <TabItem  Header="注册表管理">
                 <view:RegistryManagerView ></view:RegistryManagerView>
             </TabItem>
-            <TabItem Header="进程管理">
+            <TabItem Header="进程管理" >
                 <view:ProcessManagerView></view:ProcessManagerView>
             </TabItem>
             <TabItem Header="服务管理">
@@ -25,6 +25,12 @@
             </TabItem>
             <TabItem Header="远程桌面"  KeyDown="UIElement_OnKeyDown" KeyUp="UIElement_OnKeyUp" >
                 <view:RemoteDestopView></view:RemoteDestopView>
+                <TabItem.ContextMenu>
+                    <ContextMenu >
+                        <MenuItem Header="关闭" PreviewMouseLeftButtonDown="OnCloseRemoteDestop"></MenuItem>
+                        <MenuItem Header="打开" PreviewMouseLeftButtonDown="OnOpenRemoteDestop"  ></MenuItem>
+                    </ContextMenu>
+                </TabItem.ContextMenu>
             </TabItem>
             <TabItem Header="其他" >
                 <view:Other></view:Other>

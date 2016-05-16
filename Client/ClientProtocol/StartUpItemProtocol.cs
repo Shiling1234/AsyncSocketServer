@@ -16,7 +16,7 @@ namespace Client.ClientProtocol
 {
    public class StartUpItemProtocol:ProtocolBase
     {
-        public override Stream PacketData(string data)
+        public override byte[] GenerateMsg(String data)
         {
             List<StartUpItemInfo> startUpItemInfos = new List<StartUpItemInfo>();
             MemoryStream ms = new MemoryStream();
@@ -54,12 +54,12 @@ namespace Client.ClientProtocol
                 bf.Serialize(ms, startUpItemInfos);
             }
 
-            return ms;
+            return ms.ToArray();
         }
         public void SendRequsetMsg(string msgType)
         {
-            Stream s = this.PacketData(msgType);
-            this.SplitSendData(App.client, s, 1024 * 1024, 600);
+            byte[] bytes = this.GenerateMsg(msgType);
+            this.SplitSendData(App.client, bytes, 1024 * 1024, 600);
         }
 
        public void OpenStartupItemDir(string startupInfo)
@@ -93,13 +93,23 @@ namespace Client.ClientProtocol
                    MessageBox.Show("获取开机启动项位置失败");
                    break;
            }
-           RegistryKey subKeys=   rootKey.OpenSubKey(subDir);
-       //  string value=  subKeys.GetValue(validMsg[0]).ToString();
-           foreach (var sukey in subKeys.GetValueNames())
-           {
-               MessageBox.Show(sukey);
-           }
 
+            RegistryKey subKeys = rootKey.OpenSubKey(subDir,
+              RegistryKeyPermissionCheck.ReadWriteSubTree, System.Security.AccessControl.RegistryRights.FullControl);
+           // RegistryKey subKeys=   rootKey.OpenSubKey(subDir);
+            if (subKeys == null)
+            {
+                MessageBox.Show("注册表位置错误");
+                return;
+            }
+            else
+            {
+                //  string value=  subKeys.GetValue(validMsg[0]).ToString();
+                foreach (var sukey in subKeys.GetValueNames())
+                {
+                    MessageBox.Show(sukey);
+                }
+            }
         //   Console.WriteLine(value);
 
        }

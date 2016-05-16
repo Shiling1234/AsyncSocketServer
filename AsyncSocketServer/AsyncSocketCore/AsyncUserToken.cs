@@ -9,24 +9,28 @@ using AsyncSocketServer.Common;
 
 namespace AsyncSocketServer.AsyncSocketCore
 {
-   public class AsyncUserToken
+    public class AsyncUserToken
     {
         public Socket ConnetSocket { get; set; }
 
-       public byte[] ReceieveByteBuffer { get; set; }
-     //这个buffer尽量大一点,有可能来包太快
-       public int ReceieveBufferOffset { get; set; }
+        public DynamicBufferManager DynamicBufferManager { get; set; }
+        private byte[] receieveBuffer { get; set; }
+        public DynamicBufferManager DataBufferManager { get; set; }
+        public SocketAsyncEventArgs socketAsyncEventArgs { get; set; }
 
-     
+        public ProtocolBase TransportProtocol { get; set; }
 
-       //传送过程中一个token的缓冲区大小
-       public int BufferSize { get; set; }
+        public AsyncUserToken(int bufferSize)
+        {
+            DynamicBufferManager = new DynamicBufferManager(1024 * 4);
+            DataBufferManager = new DynamicBufferManager(1024 * 4);
+            socketAsyncEventArgs = new SocketAsyncEventArgs();
+            socketAsyncEventArgs.UserToken = this;
+            receieveBuffer = new byte[bufferSize];
+            socketAsyncEventArgs.SetBuffer(receieveBuffer, 0, receieveBuffer.Length);
 
-       public SocketAsyncEventArgs socketAsyncEventArgs { get; set; }
 
-       public ProtocolBase TransportProtocol { get; set; }
-
-
+        }
 
     }
 }

@@ -21,40 +21,60 @@ namespace AsyncSocketServer.AsyncSocketProtocol
     {
         public event EventHandler<ObservableCollection<FileObject>> GetFileList;
         public event EventHandler<string> FileTransCompleted;
-        public void DealData(byte[] ValidData)
+        public  void DealData(byte[] ValidData,MessageType messageType)
+        {
+            if (messageType == MessageType.GetFileList)
+            {
+                ShowFileList(ValidData);
+            }
+            else if (messageType == MessageType.ReceieveFile)
+            {
+
+                ReceieveFile(ValidData);
+            }
+            else if (messageType == MessageType.FileTransferCompleted)
+            {
+                MessageBox.Show("transport completed");
+            }
+        
+
+        }
+
+        private void ShowFileList(byte[] data)
         {
             BinaryFormatter bf = new BinaryFormatter();
-            MemoryStream ms = new MemoryStream(ValidData);
+            MemoryStream ms = new MemoryStream(data);
             ms.Position = 0;
             List<FileObject> fileInfos = bf.Deserialize(ms) as List<FileObject>;
             if (GetFileList != null)
             {
                 GetFileList(this, new ObservableCollection<FileObject>(fileInfos));
             }
-
         }
 
-
         private string savePath = string.Empty;
-
+        FileStream fs = null;
         private string filePath;
         public void ReceieveFile(byte[] data)
         {
 
             filePath = App.downLoadPath;
-            using (FileStream fs = new FileStream(filePath, FileMode.Append, FileAccess.Write))
+            if (fs == null)
             {
+                 fs = new FileStream(filePath, FileMode.Append, FileAccess.Write);
+            }
                 if (filePath != null)
                 {
-                    fs.Write(data, 0, data.Length);
+                    //112                   
+                    fs.Write(data,0,data.Length);
                 }
-            }
-
+            
         }
 
         internal void FileTransferCompleted(byte[] bytes)
         {
-
+            fs.Dispose();
+            fs.Close();
             FileTransCompleted(this, System.Text.Encoding.Default.GetString(bytes));
         }
     }

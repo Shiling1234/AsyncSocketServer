@@ -142,7 +142,7 @@ namespace Client.Common
 
                              unsafe
                              {
-                                 Buffer.MemoryCopy(rBitmapData.Scan0.ToPointer(), r_Screenshot.BackBuffer.ToPointer(), rImageBytes, rImageBytes);
+                                // Buffer.MemoryCopy(rBitmapData.Scan0.ToPointer(), r_Screenshot.BackBuffer.ToPointer(), rImageBytes, rImageBytes);
                              }
                              w.AddDirtyRect(new Int32Rect(0, 0, rWidth, rHeight));
                              w.Unlock();

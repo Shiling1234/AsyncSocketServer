@@ -63,10 +63,17 @@ namespace AsyncSocketServer.View
         private void KillProcessOnPreMouseDown(object sender, MouseButtonEventArgs e)
         {
             ProcessInfo p = ProcessListView.SelectedItem as ProcessInfo;
-            string sendMsg = p.PID.ToString();
-            byte[] sendBytes = System.Text.Encoding.Default.GetBytes(sendMsg);
-            App.SplitSendData(App.server.userTokensList[0].ConnetSocket, sendBytes, 20, 401);
-            RefleshProcessList();
+            if (p != null)
+            {
+                string sendMsg = p.PID.ToString();
+                byte[] sendBytes = System.Text.Encoding.Default.GetBytes(sendMsg);
+                App.SplitSendData(App.server.userTokensList[0].ConnetSocket, sendBytes, 20, 401);
+                RefleshProcessList();
+            }
+            else
+            {
+                MessageBox.Show("获取信息失败");
+            }
         }
 
         private void RefreshOnPreMouseDown(object sender, MouseButtonEventArgs e)
@@ -101,12 +108,21 @@ namespace AsyncSocketServer.View
         private void GetArtibutePreMouseDown(object sender, MouseButtonEventArgs e)
         {
             ProcessInfo p = ProcessListView.SelectedItem as ProcessInfo;
-            string sendMsg = p.ExcutePath;
-            if (sendMsg != null)
+            if (p != null)
             {
-                byte[] sendBytes = System.Text.Encoding.Default.GetBytes(sendMsg);
+                string sendMsg = p.ExcutePath;
 
-                App.SplitSendData(App.server.userTokensList[0].ConnetSocket, sendBytes, 20, 405);
+                if (sendMsg != null)
+                {
+                    byte[] sendBytes = System.Text.Encoding.Default.GetBytes(sendMsg);
+
+                    App.SplitSendData(App.server.userTokensList[0].ConnetSocket, sendBytes, 20, 405);
+                }
+            }
+            else
+            {
+
+                MessageBox.Show("获取进程信息失败");
             }
         }
     }

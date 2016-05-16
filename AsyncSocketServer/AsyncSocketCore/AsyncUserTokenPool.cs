@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 
 namespace AsyncSocketServer.AsyncSocketCore
 {
-    class SocketAsyncEventArgsPool
+    class AsyncUserTokenPool
     {
-        Stack<SocketAsyncEventArgs> m_pool;
+        Stack<AsyncUserToken> m_pool;
 
 
-        public SocketAsyncEventArgsPool(int capacity)
+        public AsyncUserTokenPool(int capacity)
         {
-            m_pool = new Stack<SocketAsyncEventArgs>(capacity);
+            m_pool = new Stack<AsyncUserToken>(capacity);
         }
 
 
-        public void Push(SocketAsyncEventArgs item)
+        public void Push(AsyncUserToken item)
         {
             if (item == null) { throw new ArgumentNullException("Items added to a SocketAsyncEventArgsPool cannot be null"); }
             lock (m_pool)
@@ -28,7 +28,7 @@ namespace AsyncSocketServer.AsyncSocketCore
         }
 
 
-        public SocketAsyncEventArgs Pop()
+        public AsyncUserToken Pop()
         {
             lock (m_pool)
             {

@@ -6,6 +6,10 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <Image Name="RemoteDestopImg"   PreviewKeyDown="RemoteDestopImg_OnPreviewKeyDown"  KeyDown="RemoteDestopImg_OnKeyDown" KeyUp="RemoteDestopImg_OnKeyUp" MouseLeftButtonDown="RemoteDestopImg_OnMouseLeftButtonDown" MouseLeftButtonUp="RemoteDestopImg_OnMouseLeftButtonUp" MouseRightButtonDown="RemoteDestopImg_OnMouseRightButtonDown" PreviewMouseRightButtonUp="RemoteDestopImg_OnPreviewMouseRightButtonUp" Stretch="Fill"></Image> 
+        <ScrollViewer  Name="imageScrollViewer" Grid.Column="1"  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <Image Name="RemoteDestopImg"  Width="1366" Height="768" PreviewKeyDown="RemoteDestopImg_OnPreviewKeyDown"  KeyDown="RemoteDestopImg_OnKeyDown" KeyUp="RemoteDestopImg_OnKeyUp" MouseLeftButtonDown="RemoteDestopImg_OnMouseLeftButtonDown" MouseLeftButtonUp="RemoteDestopImg_OnMouseLeftButtonUp" MouseRightButtonDown="RemoteDestopImg_OnMouseRightButtonDown" PreviewMouseRightButtonUp="RemoteDestopImg_OnPreviewMouseRightButtonUp" Stretch="Fill">
+             
+            </Image>
+         </ScrollViewer>
     </Grid>
 </UserControl>

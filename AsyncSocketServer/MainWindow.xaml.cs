@@ -23,7 +23,7 @@ namespace AsyncSocketServer
     {
         public MainWindow()
         {
-            App.server = new Server(1, 1024 * 1024);
+            App.server = new Server(2, 1024 * 1024);
             this.Loaded += MainWindow_Loaded;
             InitializeComponent();        
         }

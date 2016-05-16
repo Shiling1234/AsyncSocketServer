@@ -58,7 +58,7 @@ namespace Client
                 receiveBroadCastMsg.Join();
                 receiveCommand.Abort();
                 receiveCommand.Join();
-
+                //s
             };
 
         }

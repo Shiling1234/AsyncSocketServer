@@ -37,7 +37,7 @@ namespace AsyncSocketServer
         {
             App.server.Init();
            
-           App.server.Start(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5555));
+           App.server.Start(new IPEndPoint(IPAddress.Parse("192.168.0.201"), 5555));
          //   App.server.Start(new IPEndPoint(Dns.GetHostAddresses(Dns.GetHostName())[2], 5555));
 
             App.server.StartAccept(null);

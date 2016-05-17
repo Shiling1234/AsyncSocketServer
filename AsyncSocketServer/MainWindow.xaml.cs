@@ -57,7 +57,7 @@ namespace AsyncSocketServer
 
         private void OnCloseRemoteDestop(object sender, MouseButtonEventArgs e)
         {
-          
+          //2
             string sendMsg = "CloseDestopImage";
             byte[] sendBytes = System.Text.Encoding.Default.GetBytes(sendMsg);
             App.SplitSendData(App.server.userTokensList[0].ConnetSocket, sendBytes, 20, 707);

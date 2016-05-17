@@ -39,7 +39,6 @@ namespace AsyncSocketServer
            
            App.server.Start(new IPEndPoint(IPAddress.Parse("192.168.0.201"), 5555));
          //   App.server.Start(new IPEndPoint(Dns.GetHostAddresses(Dns.GetHostName())[2], 5555));
-
             App.server.StartAccept(null);
         }
 
@@ -58,6 +57,7 @@ namespace AsyncSocketServer
 
         private void OnCloseRemoteDestop(object sender, MouseButtonEventArgs e)
         {
+          
             string sendMsg = "CloseDestopImage";
             byte[] sendBytes = System.Text.Encoding.Default.GetBytes(sendMsg);
             App.SplitSendData(App.server.userTokensList[0].ConnetSocket, sendBytes, 20, 707);

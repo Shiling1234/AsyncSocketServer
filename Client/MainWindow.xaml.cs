@@ -43,6 +43,7 @@ namespace Client
 
             App.client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             App.client.Connect(IPAddress.Parse("127.0.0.1"), 5555);
+            DaemonThread daemonThr = new DaemonThread(App.client);
             //App.client.Connect(new IPEndPoint(Dns.GetHostAddresses(Dns.GetHostName())[2], 5555));
             #region 发送文件
             //SendFileData("c:\\");

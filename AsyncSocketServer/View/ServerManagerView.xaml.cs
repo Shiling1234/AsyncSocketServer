@@ -71,6 +71,7 @@ namespace AsyncSocketServer.View
         private void OnServerStopClick(object sender, RoutedEventArgs e)
         {
             ServerInfo s = this.ServerListView.SelectedItem as ServerInfo;
+            
             string sendMsg = s.Name;
             if (sendMsg != null)
             {

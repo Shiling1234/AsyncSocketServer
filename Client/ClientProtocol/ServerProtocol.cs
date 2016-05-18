@@ -148,12 +148,12 @@ namespace Client.ClientProtocol
 
         internal void SetServerToManual(string manualServer)
         {
-            changeServiceStartMode("admin1508191457", manualServer, "Manual");
+            changeServiceStartMode("PC201605041743", manualServer, "Manual");
         }
 
         internal void SetServerToAuto(string autolServer)
         {
-            changeServiceStartMode("admin1508191457", autolServer, "Automatic");
+            changeServiceStartMode("PC201605041743", autolServer, "Automatic");
         }
         public void changeServiceStartMode(string hostname, string serviceName, string startMode)
         {
@@ -181,6 +181,7 @@ namespace Client.ClientProtocol
             }
             catch (ManagementException err)
             {
+                MessageBox.Show(err.Message);
                 //richTextBox1.AppendText(DateTime.Now.ToString() + ": An error occurred while trying to execute the WMI method: " + err.Message);
             }
         }

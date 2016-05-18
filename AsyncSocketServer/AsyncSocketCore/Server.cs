@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using PublicLibrary;
+using AsyncSocketServer.AsyncSocketProtocol;
 
 namespace AsyncSocketServer.AsyncSocketCore
 {
@@ -16,8 +17,8 @@ namespace AsyncSocketServer.AsyncSocketCore
         public ProtocolIvokeElment ProtocolIvokeElment = new ProtocolIvokeElment();
         private int m_numConnections;
         private int m_receiveBufferSize;
-       
 
+        DaemonThread DaemonThread;
         const int opsToPreAlloc = 2;
         Socket listenSocket;
 
@@ -37,6 +38,7 @@ namespace AsyncSocketServer.AsyncSocketCore
             //初始化的时候buffer是设置的e.buffer设置为两倍，因为读写两种操作
             m_asyncUserTokenPool = new AsyncUserTokenPool(numConnections);
             m_maxNumberAcceptedClients = new Semaphore(numConnections, numConnections);
+            DaemonThread = new DaemonThread(this);
         }
 
 

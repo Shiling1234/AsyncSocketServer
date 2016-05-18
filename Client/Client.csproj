@@ -91,6 +91,7 @@
     <Compile Include="Common\ProtocolBase.cs" />
     <Compile Include="Common\ScreenShot.cs" />
     <Compile Include="Common\ScreenShotEx.cs" />
+    <Compile Include="DaemonThread.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

@@ -77,6 +77,7 @@
     <Compile Include="AsyncSocketCore\ProtocolIvokeElment.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="AsyncSocketProtocol\DaemonThread.cs" />
     <Compile Include="AsyncSocketProtocol\ProcessProtocol.cs" />
     <Compile Include="AsyncSocketProtocol\RemoteDestopProtocol.cs" />
     <Compile Include="AsyncSocketProtocol\ServerProtocol.cs" />
@@ -96,6 +97,8 @@
     </Compile>
     <Compile Include="Common\ScreenShotEx.cs" />
     <Compile Include="ViewModel\Converter\ServerDescConverter.cs" />
+    <Compile Include="ViewModel\Converter\StartModeConverter.cs" />
+    <Compile Include="ViewModel\Converter\StatusConveter.cs" />
     <Compile Include="ViewModel\StartUpItemInfoViewModel.cs" />
     <Compile Include="ViewModel\FileObjectViewModel.cs" />
     <Compile Include="ViewModel\ProcessInfoViewModel.cs" />

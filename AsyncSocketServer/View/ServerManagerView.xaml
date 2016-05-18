@@ -8,7 +8,10 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <converter:ServerDescConverter x:Key="ServerDescConverter"/>
+        <converter:StatusConveter x:Key="StatusConverter"/>
+        <converter:StartModeConverter x:Key="StartModeConverter"/>
     </UserControl.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"></RowDefinition>
@@ -30,23 +33,35 @@
                         <TextBlock FontSize="11" FontFamily="Consolas" TextAlignment="Center" Width="150"  Text="{Binding Description ,Converter={StaticResource ServerDescConverter}}"></TextBlock>
                         <TextBlock TextAlignment="Center" Width="160"  Text="{Binding StartMode}"></TextBlock>
                         <TextBlock TextAlignment="Center" Width="160"  Text="{Binding Status}"></TextBlock>
+                        <StackPanel.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="开始"  Click="OnServerStartClick" IsEnabled="{Binding Status,Converter={StaticResource StatusConverter},ConverterParameter=Start}"></MenuItem>
+                                <MenuItem Header="停止"  Click="OnServerStopClick" IsEnabled="{Binding Status,Converter={StaticResource StatusConverter},ConverterParameter=Stop}"></MenuItem>
+                                <MenuItem Header="刷新" Click="OnServerRefelshClick" ></MenuItem>
+                                <MenuItem Header="属性"  Click="OnServerAttributeClick" ></MenuItem>
+                                <MenuItem Header="更改启动方式"  >
+                                    <MenuItem Header="手动" Click="OnServerManalItemClick" IsEnabled="{Binding StartMode,Converter={StaticResource StartModeConverter},ConverterParameter=ChangeToManual}" ></MenuItem>
+                                    <MenuItem Header="自动" Click="OnServerAutoItemClick" IsEnabled="{Binding StartMode,Converter={StaticResource StartModeConverter},ConverterParameter=ChangeToAuto}"></MenuItem>
+                                </MenuItem>
+                            </ContextMenu>
+                        </StackPanel.ContextMenu>
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
-            <ListView.ContextMenu>
-                <ContextMenu DataContext="{Binding}" >
-                    <MenuItem Header="开始"  Click="OnServerStartClick"></MenuItem>
-                    <MenuItem Header="停止"  Click="OnServerStopClick"></MenuItem>
-                    <MenuItem Header="暂停"  Click="OnServerPauseClick"></MenuItem>
-                    <MenuItem Header="继续"  Click="OnServerContinueClick"></MenuItem>
+            <!--<ListView.ContextMenu >
+                <ContextMenu DataContext="{Binding ServerListView.SelectedItem.DataContext }">
+                    <MenuItem Header="开始"  Click="OnServerStartClick" IsEnabled="{Binding Status,Converter={StaticResource StatusConverter}}"></MenuItem>
+                    <MenuItem Header="停止"  Click="OnServerStopClick" IsEnabled="{Binding Status,Converter={StaticResource StatusConverter}}"></MenuItem>
+                    --><!--<MenuItem Header="暂停"  Click="OnServerPauseClick"></MenuItem>
+                    <MenuItem Header="继续"  Click="OnServerContinueClick"></MenuItem>--><!--
                     <MenuItem Header="刷新" Click="OnServerRefelshClick" ></MenuItem>
                     <MenuItem Header="属性"  Click="OnServerAttributeClick" ></MenuItem>
                     <MenuItem Header="更改启动方式"  >
-                        <MenuItem Header="手动" Click="OnServerManalItemClick"></MenuItem>
+                        <MenuItem Header="手动" Click="OnServerManalItemClick" ></MenuItem>
                         <MenuItem Header="自动" Click="OnServerAutoItemClick"></MenuItem>
                     </MenuItem>
                 </ContextMenu>
-            </ListView.ContextMenu>
+            </ListView.ContextMenu>-->
         </ListView>
     </Grid>
 </UserControl>

@@ -92,7 +92,7 @@ namespace AsyncSocketServer.View
         {
             singleRegedit = detailListView.SelectedItem as SingleRegeditInfo;
             string path = singleRegedit.Dir + "|" + singleRegedit.Key;
-            UpdateRegedit upWin = new UpdateRegedit(path);
+            UpdateRegedit upWin = new UpdateRegedit(path,singleRegedit.Value);
             upWin.UpdateUiDel += UpdateValue;
             upWin.ShowDialog();
         }

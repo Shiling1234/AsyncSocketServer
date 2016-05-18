@@ -27,10 +27,13 @@ namespace AsyncSocketServer.PopupWin
         public delegate void updateUI(string newValue);
         public updateUI UpdateUiDel;
         private string newValue;
-        public UpdateRegedit(string value)
+        private string oldValue;
+        public UpdateRegedit(string value,string oldValue)
         {
             newValue = value;
+            this.oldValue = oldValue;    
             InitializeComponent();
+            this.oldValueTxtBlock.Text = oldValue;
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {

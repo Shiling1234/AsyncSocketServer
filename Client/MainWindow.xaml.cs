@@ -42,7 +42,7 @@ namespace Client
             
 
             App.client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            App.client.Connect(IPAddress.Parse("127.0.0.1"), 5555);
+            App.client.Connect(IPAddress.Parse("192.168.0.201"), 5555);
             //App.client.Connect(new IPEndPoint(Dns.GetHostAddresses(Dns.GetHostName())[2], 5555));
             #region 发送文件
             //SendFileData("c:\\");
@@ -58,7 +58,7 @@ namespace Client
                 receiveBroadCastMsg.Join();
                 receiveCommand.Abort();
                 receiveCommand.Join();
-                //s
+
             };
 
         }
@@ -557,7 +557,7 @@ namespace Client
         {     
  
             byte[] s = fileProtocol.GenerateMsg(dir);
-        
+            fileProtocol.SplitSendData(App.client, s, 200, 200);
         }
     }
 }
